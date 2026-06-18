@@ -14,6 +14,8 @@ import PostProject  from './pages/PostProject';
 import AITools      from './pages/AITools';
 import ProfileEdit  from './pages/ProfileEdit';
 import Messages     from './pages/Messages';
+import CreateService from './pages/CreateService';
+import PostJob       from './pages/PostJob';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -128,8 +130,8 @@ export default function App() {
           <Route path="/my-orders"      element={<Protected><ComingSoon title="My Orders 📦" icon="📦" /></Protected>} />
           <Route path="/profile"        element={<Protected><ComingSoon title="My Profile 👤" icon="👤" /></Protected>} />
           <Route path="/earnings"       element={<Protected><ComingSoon title="Earnings 💰" icon="💰" /></Protected>} />
-          <Route path="/post-job"       element={<Protected><ComingSoon title="Post a Job ➕" icon="➕" /></Protected>} />
-          <Route path="/create-service" element={<Protected><ComingSoon title="Create a Service ➕" icon="➕" /></Protected>} />
+          <Route path="/post-job"       element={<Protected><PostJob /></Protected>} />
+          <Route path="/create-service" element={<Protected><CreateService /></Protected>} />
           <Route path="/learn"          element={<Protected><ComingSoon title="Learning Hub 📚" icon="📚" /></Protected>} />
           <Route path="/notifications"  element={<Protected><ComingSoon title="Notifications 🔔" icon="🔔" /></Protected>} />
           <Route path="/projects/:id"   element={<Protected><ComingSoon title="Project Details 📋" icon="📋" /></Protected>} />
