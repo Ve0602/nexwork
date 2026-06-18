@@ -1,12 +1,20 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Pages
 import LandingPage  from './pages/LandingPage';
 import Onboarding   from './pages/Onboarding';
 import Dashboard    from './pages/Dashboard';
+import FindWork     from './pages/FindWork';
+import FindTalent   from './pages/FindTalent';
+import ServicesPage from './pages/ServicesPage';
+import JobsPage     from './pages/JobsPage';
+import PostProject  from './pages/PostProject';
+import AITools      from './pages/AITools';
+import ProfileEdit  from './pages/ProfileEdit';
+import Messages     from './pages/Messages';
 
-// Protected route
 function Protected({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <Loader />;
@@ -23,22 +31,21 @@ function AdminOnly({ children }) {
 }
 
 const Loader = () => (
-  <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#07070f', color:'#d4a853', fontSize:18, fontFamily:'Syne,sans-serif', fontWeight:700 }}>
+  <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#07070f', color:'#d4a853', fontSize:18, fontFamily:'Syne,sans-serif', fontWeight:700, gap:12 }}>
+    <div style={{ width:32, height:32, borderRadius:8, background:'linear-gradient(135deg,#d4a853,#b8860b)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900, color:'#000', fontSize:14 }}>N</div>
     Loading NexWork...
   </div>
 );
 
-// Placeholder pages (to be built next)
-const ComingSoon = ({ title }) => (
+const ComingSoon = ({ title, icon='🚧' }) => (
   <div style={{ minHeight:'100vh', background:'#07070f', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:16, fontFamily:'DM Sans,sans-serif', color:'#fff', paddingTop:80 }}>
-    <div style={{ fontSize:48 }}>🚧</div>
+    <div style={{ fontSize:52 }}>{icon}</div>
     <h2 style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:24 }}>{title}</h2>
-    <p style={{ color:'rgba(255,255,255,0.4)' }}>This page is being built. Check back soon!</p>
-    <a href="/dashboard" style={{ background:'#d4a853', color:'#000', padding:'11px 24px', borderRadius:9, textDecoration:'none', fontWeight:700, fontSize:14 }}>← Back to Dashboard</a>
+    <p style={{ color:'rgba(255,255,255,0.4)', fontSize:14 }}>Coming very soon!</p>
+    <a href="/dashboard" style={{ background:'linear-gradient(135deg,#d4a853,#b8860b)', color:'#000', padding:'11px 24px', borderRadius:9, textDecoration:'none', fontWeight:700, fontSize:14 }}>← Dashboard</a>
   </div>
 );
 
-// Login page (simple version)
 function LoginPage() {
   const { login, user } = useAuth();
   const [form, setForm] = React.useState({ email:'', password:'' });
@@ -64,11 +71,11 @@ function LoginPage() {
       <div style={{ width:'100%', maxWidth:420, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:36 }}>
         <div style={{ textAlign:'center', marginBottom:28 }}>
           <a href="/" style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:36, height:36, borderRadius:10, background:`linear-gradient(135deg,${gold},#b8860b)`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:900, color:'#000', fontSize:16 }}>N</div>
+            <div style={{ width:38, height:38, borderRadius:10, background:`linear-gradient(135deg,${gold},#b8860b)`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:900, color:'#000', fontSize:17 }}>N</div>
             <span style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:gold }}>NexWork</span>
           </a>
           <h2 style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:'#fff', marginTop:20, marginBottom:4 }}>Welcome Back 👋</h2>
-          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:14 }}>Sign in to your account</p>
+          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:13 }}>Sign in to your NexWork account</p>
         </div>
         {error && <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:8, padding:'10px 14px', color:'#f87171', fontSize:13, marginBottom:16 }}>{error}</div>}
         <form onSubmit={handleSubmit}>
@@ -78,12 +85,12 @@ function LoginPage() {
               <input type={type} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:9, padding:'12px 13px', color:'#fff', fontSize:14, outline:'none', fontFamily:'DM Sans,sans-serif' }} onFocus={e=>e.target.style.borderColor=gold} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'} />
             </div>
           ))}
-          <button type="submit" disabled={loading} style={{ width:'100%', background:`linear-gradient(135deg,${gold},#b8860b)`, color:'#000', border:'none', borderRadius:9, padding:13, fontWeight:800, fontSize:15, cursor:'pointer', fontFamily:'Syne,sans-serif', marginTop:4, opacity:loading?0.7:1 }}>
-            {loading ? 'Signing in...' : '→ Sign In'}
+          <button type="submit" disabled={loading} style={{ width:'100%', background:`linear-gradient(135deg,${gold},#b8860b)`, color:'#000', border:'none', borderRadius:9, padding:13, fontWeight:800, fontSize:15, cursor:loading?'not-allowed':'pointer', fontFamily:'Syne,sans-serif', marginTop:4, opacity:loading?0.7:1 }}>
+            {loading ? '⏳ Signing in...' : '→ Sign In'}
           </button>
         </form>
         <p style={{ textAlign:'center', marginTop:18, fontSize:14, color:'rgba(255,255,255,0.4)' }}>
-          No account? <a href="/onboarding" style={{ color:gold, fontWeight:600 }}>Create one free</a>
+          No account? <a href="/onboarding" style={{ color:gold, fontWeight:600, textDecoration:'none' }}>Create one free →</a>
         </p>
       </div>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800;900&family=DM+Sans&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
@@ -91,49 +98,48 @@ function LoginPage() {
   );
 }
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public */}
-          <Route path="/"            element={<LandingPage />} />
-          <Route path="/login"       element={<LoginPage />} />
-          <Route path="/onboarding"  element={<Onboarding />} />
+          {/* PUBLIC */}
+          <Route path="/"             element={<LandingPage />} />
+          <Route path="/login"        element={<LoginPage />} />
+          <Route path="/onboarding"   element={<Onboarding />} />
 
-          {/* Protected */}
-          <Route path="/dashboard"   element={<Protected><Dashboard /></Protected>} />
-          <Route path="/find-work"   element={<Protected><ComingSoon title="Find Work 💼" /></Protected>} />
-          <Route path="/find-talent" element={<Protected><ComingSoon title="Find Talent 👥" /></Protected>} />
-          <Route path="/services"    element={<Protected><ComingSoon title="Services 🛍️" /></Protected>} />
-          <Route path="/jobs"        element={<Protected><ComingSoon title="Jobs 🔍" /></Protected>} />
-          <Route path="/learn"       element={<Protected><ComingSoon title="Learning Hub 📚" /></Protected>} />
-          <Route path="/messages"    element={<Protected><ComingSoon title="Messages 💬" /></Protected>} />
-          <Route path="/my-projects" element={<Protected><ComingSoon title="My Projects 📋" /></Protected>} />
-          <Route path="/my-services" element={<Protected><ComingSoon title="My Services ⚙️" /></Protected>} />
-          <Route path="/my-orders"   element={<Protected><ComingSoon title="My Orders 📦" /></Protected>} />
-          <Route path="/profile"     element={<Protected><ComingSoon title="My Profile 👤" /></Protected>} />
-          <Route path="/profile/edit" element={<Protected><ComingSoon title="Edit Profile ✏️" /></Protected>} />
-          <Route path="/earnings"    element={<Protected><ComingSoon title="Earnings 💰" /></Protected>} />
-          <Route path="/post-project" element={<Protected><ComingSoon title="Post a Project ➕" /></Protected>} />
-          <Route path="/post-job"    element={<Protected><ComingSoon title="Post a Job ➕" /></Protected>} />
-          <Route path="/create-service" element={<Protected><ComingSoon title="Create a Gig ➕" /></Protected>} />
+          {/* PROTECTED */}
+          <Route path="/dashboard"    element={<Protected><Dashboard /></Protected>} />
+          <Route path="/find-work"    element={<Protected><FindWork /></Protected>} />
+          <Route path="/find-talent"  element={<Protected><FindTalent /></Protected>} />
+          <Route path="/services"     element={<Protected><ServicesPage /></Protected>} />
+          <Route path="/jobs"         element={<Protected><JobsPage /></Protected>} />
+          <Route path="/post-project" element={<Protected><PostProject /></Protected>} />
+          <Route path="/profile/edit" element={<Protected><ProfileEdit /></Protected>} />
 
           {/* AI Tools */}
-          <Route path="/ai-tools/career"   element={<Protected><ComingSoon title="AI Career Coach 🎯" /></Protected>} />
-          <Route path="/ai-tools/resume"   element={<Protected><ComingSoon title="AI Resume Builder 📝" /></Protected>} />
-          <Route path="/ai-tools/interview" element={<Protected><ComingSoon title="AI Interview Coach 🎤" /></Protected>} />
-          <Route path="/ai-tools/skills"   element={<Protected><ComingSoon title="AI Skill Analyzer 📊" /></Protected>} />
-          <Route path="/ai-tools/proposal" element={<Protected><ComingSoon title="AI Proposal Writer ✍️" /></Protected>} />
-          <Route path="/ai-tools/match"    element={<Protected><ComingSoon title="AI Job Matcher 🔍" /></Protected>} />
+          <Route path="/ai-tools"           element={<Protected><AITools /></Protected>} />
+          <Route path="/ai-tools/:tool"     element={<Protected><AITools /></Protected>} />
+
+          {/* Coming soon */}
+          <Route path="/messages"       element={<Protected><Messages /></Protected>} />
+          <Route path="/my-projects"    element={<Protected><ComingSoon title="My Projects 📋" icon="📋" /></Protected>} />
+          <Route path="/my-services"    element={<Protected><ComingSoon title="My Services ⚙️" icon="⚙️" /></Protected>} />
+          <Route path="/my-orders"      element={<Protected><ComingSoon title="My Orders 📦" icon="📦" /></Protected>} />
+          <Route path="/profile"        element={<Protected><ComingSoon title="My Profile 👤" icon="👤" /></Protected>} />
+          <Route path="/earnings"       element={<Protected><ComingSoon title="Earnings 💰" icon="💰" /></Protected>} />
+          <Route path="/post-job"       element={<Protected><ComingSoon title="Post a Job ➕" icon="➕" /></Protected>} />
+          <Route path="/create-service" element={<Protected><ComingSoon title="Create a Service ➕" icon="➕" /></Protected>} />
+          <Route path="/learn"          element={<Protected><ComingSoon title="Learning Hub 📚" icon="📚" /></Protected>} />
+          <Route path="/notifications"  element={<Protected><ComingSoon title="Notifications 🔔" icon="🔔" /></Protected>} />
+          <Route path="/projects/:id"   element={<Protected><ComingSoon title="Project Details 📋" icon="📋" /></Protected>} />
+          <Route path="/talent/:id"     element={<Protected><ComingSoon title="Talent Profile 👤" icon="👤" /></Protected>} />
+          <Route path="/candidates"     element={<Protected><ComingSoon title="Candidates 👥" icon="👥" /></Protected>} />
 
           {/* Admin */}
-          <Route path="/admin"       element={<AdminOnly><ComingSoon title="Admin Dashboard ⚙️" /></AdminOnly>} />
+          <Route path="/admin"          element={<AdminOnly><ComingSoon title="Admin Dashboard ⚙️" icon="⚙️" /></AdminOnly>} />
 
-          <Route path="*"            element={<Navigate to="/" />} />
+          <Route path="*"               element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
