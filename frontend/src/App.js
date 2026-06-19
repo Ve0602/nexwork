@@ -14,8 +14,11 @@ import PostProject  from './pages/PostProject';
 import AITools      from './pages/AITools';
 import ProfileEdit  from './pages/ProfileEdit';
 import Messages     from './pages/Messages';
-import CreateService from './pages/CreateService';
-import PostJob       from './pages/PostJob';
+import CreateService   from './pages/CreateService';
+import PostJob         from './pages/PostJob';
+import AdminDashboard  from './pages/AdminDashboard';
+import MyOrders        from './pages/MyOrders';
+import MyProjects      from './pages/MyProjects';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -125,9 +128,9 @@ export default function App() {
 
           {/* Coming soon */}
           <Route path="/messages"       element={<Protected><Messages /></Protected>} />
-          <Route path="/my-projects"    element={<Protected><ComingSoon title="My Projects 📋" icon="📋" /></Protected>} />
+          <Route path="/my-projects"    element={<Protected><MyProjects /></Protected>} />
           <Route path="/my-services"    element={<Protected><ComingSoon title="My Services ⚙️" icon="⚙️" /></Protected>} />
-          <Route path="/my-orders"      element={<Protected><ComingSoon title="My Orders 📦" icon="📦" /></Protected>} />
+          <Route path="/my-orders"      element={<Protected><MyOrders /></Protected>} />
           <Route path="/profile"        element={<Protected><ComingSoon title="My Profile 👤" icon="👤" /></Protected>} />
           <Route path="/earnings"       element={<Protected><ComingSoon title="Earnings 💰" icon="💰" /></Protected>} />
           <Route path="/post-job"       element={<Protected><PostJob /></Protected>} />
@@ -139,7 +142,7 @@ export default function App() {
           <Route path="/candidates"     element={<Protected><ComingSoon title="Candidates 👥" icon="👥" /></Protected>} />
 
           {/* Admin */}
-          <Route path="/admin"          element={<AdminOnly><ComingSoon title="Admin Dashboard ⚙️" icon="⚙️" /></AdminOnly>} />
+          <Route path="/admin"          element={<AdminOnly><AdminDashboard /></AdminOnly>} />
 
           <Route path="*"               element={<Navigate to="/" />} />
         </Routes>
