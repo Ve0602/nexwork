@@ -20,6 +20,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/jobs',     require('./routes/jobs'));
 app.use('/api/admin',    require('./routes/admin'));
 app.use('/api/ai',       require('./routes/ai'));
+app.use('/api/payments', require('./routes/payments'));
 
 app.get('/', (req, res) => res.json({ status: 'NexWork API running ✅' }));
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import Checkout from '../components/Checkout';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -154,6 +155,17 @@ export default function MyOrders() {
                         <button onClick={()=>updateStatus(selected._id,'completed')} style={btnGold}>✅ Accept & Complete</button>
                         <button onClick={()=>updateStatus(selected._id,'disputed')} style={btnRed}>⚠️ Raise Dispute</button>
                       </>
+                    )}
+                    {/* Client pays for pending unpaid order */}
+                    {activeTab==='asClient' && selected.status==='pending' && selected.paymentStatus!=='paid' && (
+                      <Checkout
+                        orderId={selected._id}
+                        amount={selected.amount}
+                        token={token}
+                        user={user}
+                        onSuccess={() => { setMsg('✅ Payment successful! Order is now active.'); load(); setSelected(null); }}
+                        onError={(err) => setMsg('❌ ' + err)}
+                      />
                     )}
                     {/* Client can cancel pending */}
                     {activeTab==='asClient' && selected.status==='pending' && (
