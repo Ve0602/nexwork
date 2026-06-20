@@ -19,6 +19,7 @@ import PostJob         from './pages/PostJob';
 import AdminDashboard  from './pages/AdminDashboard';
 import MyOrders        from './pages/MyOrders';
 import MyProjects      from './pages/MyProjects';
+import Earnings        from './pages/Earnings';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -132,7 +133,7 @@ export default function App() {
           <Route path="/my-services"    element={<Protected><ComingSoon title="My Services ⚙️" icon="⚙️" /></Protected>} />
           <Route path="/my-orders"      element={<Protected><MyOrders /></Protected>} />
           <Route path="/profile"        element={<Protected><ComingSoon title="My Profile 👤" icon="👤" /></Protected>} />
-          <Route path="/earnings"       element={<Protected><ComingSoon title="Earnings 💰" icon="💰" /></Protected>} />
+          <Route path="/earnings"       element={<Protected><Earnings /></Protected>} />
           <Route path="/post-job"       element={<Protected><PostJob /></Protected>} />
           <Route path="/create-service" element={<Protected><CreateService /></Protected>} />
           <Route path="/learn"          element={<Protected><ComingSoon title="Learning Hub 📚" icon="📚" /></Protected>} />
