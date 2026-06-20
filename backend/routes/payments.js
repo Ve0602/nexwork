@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Order = require('../models/Order');
 const NexUser = require('../models/NexUser');
 const { auth } = require('../middleware/auth');
+const { notify } = require('./notifications');
 
 // Razorpay setup - lazy loaded so server doesn't crash if keys aren't set yet
 let razorpay = null;
@@ -63,6 +64,14 @@ router.post('/verify', auth, async (req, res) => {
     order.paymentId = razorpay_payment_id;
     order.status = 'active';
     await order.save();
+
+    const provider = await NexUser.findById(order.providerId);
+    notify({
+      userId: order.providerId, type:'payment_received',
+      title:'💰 Payment Received', message:`₹${order.amount} payment confirmed. Order is now active!`,
+      link:'/my-orders', icon:'💰',
+      emailTemplate:'paymentReceived', emailData:{ providerName: provider?.name, amount: order.amount }
+    });
 
     res.json({ message: '✅ Payment successful! Order is now active.', order });
   } catch (e) { res.status(500).json({ message: e.message }); }

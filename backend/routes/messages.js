@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Message = require('../models/Message');
 const { auth } = require('../middleware/auth');
+const { notify } = require('./notifications');
 
 // Get conversations list
 router.get('/conversations', auth, async (req, res) => {
@@ -30,6 +31,14 @@ router.post('/', auth, async (req, res) => {
     const conversationId = [req.user._id.toString(), receiverId].sort().join('_');
     const message = await Message.create({ conversationId, senderId: req.user._id, receiverId, content, type, fileUrl, projectId, orderId });
     const populated = await message.populate('senderId','name photo');
+
+    notify({
+      userId: receiverId, type:'new_message',
+      title:'💬 New Message', message:`${req.user.name}: ${content.substring(0,80)}`,
+      link:'/messages', icon:'💬',
+      emailTemplate:'newMessage', emailData:{ receiverName:'', senderName: req.user.name, preview: content.substring(0,100) }
+    });
+
     res.status(201).json(populated);
   } catch (e) { res.status(400).json({ message: e.message }); }
 });

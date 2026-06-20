@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Project = require('../models/Project');
 const { auth, adminOnly } = require('../middleware/auth');
+const { notify } = require('./notifications');
 
 // Get all open projects
 router.get('/', async (req, res) => {
@@ -41,6 +42,14 @@ router.post('/:id/proposals', auth, async (req, res) => {
     if (existing) return res.status(400).json({ message: 'You already submitted a proposal' });
     project.proposals.push({ freelancerId: req.user._id, ...req.body });
     await project.save();
+
+    notify({
+      userId: project.clientId, type:'new_proposal',
+      title:'📬 New Proposal Received', message:`${req.user.name} submitted a proposal for "${project.title}"`,
+      link:'/my-projects', icon:'📬',
+      emailTemplate:'newProposal', emailData:{ clientName:'', projectTitle: project.title, freelancerName: req.user.name, bid: req.body.bid }
+    });
+
     res.status(201).json({ message: 'Proposal submitted!' });
   } catch (e) { res.status(400).json({ message: e.message }); }
 });
@@ -57,6 +66,14 @@ router.put('/:id/proposals/:proposalId/accept', auth, async (req, res) => {
     project.freelancerId = proposal.freelancerId;
     project.status = 'in_progress';
     await project.save();
+
+    notify({
+      userId: proposal.freelancerId, type:'proposal_accepted',
+      title:'✅ Your Proposal Was Accepted!', message:`Your proposal for "${project.title}" was accepted`,
+      link:'/my-projects', icon:'✅',
+      emailTemplate:'proposalAccepted', emailData:{ freelancerName:'', projectTitle: project.title }
+    });
+
     res.json({ message: 'Proposal accepted! Project started.' });
   } catch (e) { res.status(400).json({ message: e.message }); }
 });

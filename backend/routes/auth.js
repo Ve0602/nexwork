@@ -2,6 +2,8 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const NexUser = require('../models/NexUser');
 const { auth } = require('../middleware/auth');
+const { sendEmail } = require('../utils/emailSender');
+const templates = require('../utils/emailTemplates');
 
 const sign = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
@@ -12,6 +14,11 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !password) return res.status(400).json({ message: 'Name, email and password are required' });
     if (await NexUser.findOne({ email })) return res.status(400).json({ message: 'Email already registered' });
     const user = await NexUser.create({ name, email, password, phone, primaryRole, roles: [primaryRole] });
+
+    // Fire-and-forget welcome email
+    sendEmail({ to: email, subject: 'Welcome to NexWork! 🎉', html: templates.welcome({ userName: name, frontendUrl: process.env.FRONTEND_URL }) })
+      .catch(e => console.log('Welcome email skipped:', e.message));
+
     res.status(201).json({ token: sign(user._id), user: safeUser(user) });
   } catch (e) { res.status(500).json({ message: e.message }); }
 });

@@ -3,6 +3,7 @@ const Order = require('../models/Order');
 const Service = require('../models/Service');
 const NexUser = require('../models/NexUser');
 const { auth } = require('../middleware/auth');
+const { notify } = require('./notifications');
 
 // Create order
 router.post('/', auth, async (req, res) => {
@@ -21,6 +22,16 @@ router.post('/', auth, async (req, res) => {
     });
     service.orderCount += 1;
     await service.save();
+
+    // Notify provider of new order
+    const client = await NexUser.findById(req.user._id);
+    notify({
+      userId: service.providerId, type:'new_order',
+      title:'🛒 New Order Received!', message:`${client.name} ordered "${service.title}" for ₹${pkg.price}`,
+      link:'/my-orders', icon:'🛒',
+      emailTemplate:'newOrder', emailData:{ providerName: '', clientName: client.name, serviceTitle: service.title, amount: pkg.price }
+    });
+
     res.status(201).json({ order, message: 'Order placed! Complete payment to start.' });
   } catch (e) { res.status(400).json({ message: e.message }); }
 });
@@ -48,12 +59,30 @@ router.get('/:id', auth, async (req, res) => {
 router.put('/:id/status', auth, async (req, res) => {
   try {
     const { status } = req.body;
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate('serviceId','title').populate('clientId','name').populate('providerId','name');
     if (!order) return res.status(404).json({ message: 'Not found' });
     order.status = status;
     if (status === 'completed') { order.completedAt = new Date(); order.paymentStatus = 'released'; }
     order.updatedAt = new Date();
     await order.save();
+
+    if (status === 'delivered') {
+      notify({
+        userId: order.clientId._id, type:'order_delivered',
+        title:'📦 Order Delivered', message:`${order.providerId.name} delivered "${order.serviceId?.title}"`,
+        link:'/my-orders', icon:'📦',
+        emailTemplate:'orderDelivered', emailData:{ clientName: order.clientId.name, serviceTitle: order.serviceId?.title }
+      });
+    }
+    if (status === 'completed') {
+      notify({
+        userId: order.providerId._id, type:'order_completed',
+        title:'🎉 Order Completed - Payment Released!', message:`₹${order.netAmount} added to your balance`,
+        link:'/earnings', icon:'🎉',
+        emailTemplate:'orderCompleted', emailData:{ providerName: order.providerId.name, amount: order.netAmount }
+      });
+    }
+
     res.json({ order, message: `Order ${status}` });
   } catch (e) { res.status(400).json({ message: e.message }); }
 });
