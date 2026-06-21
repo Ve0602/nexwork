@@ -21,6 +21,8 @@ import MyOrders        from './pages/MyOrders';
 import MyProjects      from './pages/MyProjects';
 import Earnings        from './pages/Earnings';
 import Notifications   from './pages/Notifications';
+import ProjectDetail   from './pages/ProjectDetail';
+import TalentProfile   from './pages/TalentProfile';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -139,8 +141,8 @@ export default function App() {
           <Route path="/create-service" element={<Protected><CreateService /></Protected>} />
           <Route path="/learn"          element={<Protected><ComingSoon title="Learning Hub 📚" icon="📚" /></Protected>} />
           <Route path="/notifications"  element={<Protected><Notifications /></Protected>} />
-          <Route path="/projects/:id"   element={<Protected><ComingSoon title="Project Details 📋" icon="📋" /></Protected>} />
-          <Route path="/talent/:id"     element={<Protected><ComingSoon title="Talent Profile 👤" icon="👤" /></Protected>} />
+          <Route path="/projects/:id"   element={<ProjectDetail />} />
+          <Route path="/talent/:id"     element={<TalentProfile />} />
           <Route path="/candidates"     element={<Protected><ComingSoon title="Candidates 👥" icon="👥" /></Protected>} />
 
           {/* Admin */}
