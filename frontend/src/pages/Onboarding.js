@@ -3,14 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ROLES = [
-  { id:'freelancer',      icon:'💼', title:'Freelancer',       desc:'Offer your skills and get hired for projects', color:'#d4a853' },
-  { id:'client',          icon:'🚀', title:'Client / Employer', desc:'Post projects and hire talented professionals', color:'#7c3aed' },
-  { id:'student',         icon:'📚', title:'Student',          desc:'Learn new skills and find internships', color:'#00d4ff' },
-  { id:'jobseeker',       icon:'🔍', title:'Job Seeker',       desc:'Find full-time and part-time jobs', color:'#10b981' },
-  { id:'service_provider',icon:'🧵', title:'Service Provider', desc:'Offer local services like tailoring, photography, etc.', color:'#e91e8c' },
-  { id:'mentor',          icon:'🎓', title:'Mentor / Trainer', desc:'Teach, mentor and share your expertise', color:'#f59e0b' },
-  { id:'recruiter',       icon:'🏢', title:'Recruiter',        desc:'Find and hire talent for your company', color:'#6366f1' },
-  { id:'professional',    icon:'⭐', title:'Professional',     desc:'Build your professional brand and network', color:'#14b8a6' },
+  { id:'freelancer',      title:'Freelancer',        desc:'Offer your skills and get hired for projects' },
+  { id:'client',          title:'Client / employer',  desc:'Post projects and hire talented professionals' },
+  { id:'student',         title:'Student',            desc:'Learn new skills and find internships' },
+  { id:'jobseeker',       title:'Job seeker',         desc:'Find full-time and part-time jobs' },
+  { id:'service_provider',title:'Service provider',   desc:'Offer local services like tailoring, photography' },
+  { id:'mentor',          title:'Mentor / trainer',   desc:'Teach, mentor and share your expertise' },
+  { id:'recruiter',       title:'Recruiter',          desc:'Find and hire talent for your company' },
+  { id:'professional',    title:'Professional',       desc:'Build your professional brand and network' },
 ];
 
 const SKILL_SUGGESTIONS = {
@@ -49,22 +49,16 @@ export default function Onboarding() {
 
   const addSkill = (skill) => {
     if (!skill.trim()) return;
-    if (!form.skills.includes(skill.trim())) {
-      f('skills', [...form.skills, skill.trim()]);
-    }
+    if (!form.skills.includes(skill.trim())) f('skills', [...form.skills, skill.trim()]);
     setSkillInput('');
   };
-
   const removeSkill = (skill) => f('skills', form.skills.filter(s => s !== skill));
 
   const handleSubmit = async () => {
     setLoading(true); setError('');
-    try {
-      const user = await register(form);
-      navigate('/dashboard');
-    } catch (e) {
-      setError(e.response?.data?.message || 'Registration failed. Please try again.');
-    } finally { setLoading(false); }
+    try { await register(form); navigate('/dashboard'); }
+    catch (e) { setError(e.response?.data?.message || 'Registration failed. Please try again.'); }
+    finally { setLoading(false); }
   };
 
   const canNext = () => {
@@ -74,162 +68,124 @@ export default function Onboarding() {
     return true;
   };
 
-  const gold = '#d4a853';
-  const steps = ['Choose Role', 'Account', 'Location', 'Skills & Bio'];
+  const steps = ['Choose role', 'Account', 'Location', 'Skills'];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#07070f', fontFamily: 'DM Sans,sans-serif', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px' }}>
 
-      {/* Logo */}
-      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg,${gold},#b8860b)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontWeight: 900, color: '#000', fontSize: 16 }}>N</div>
-        <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, color: gold }}>NexWork</span>
-      </Link>
+      <Link to="/" className="mono" style={{ fontWeight: 600, fontSize: 16, marginBottom: 28 }}>NexWork</Link>
 
-      {/* Step indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32, gap: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28, gap: 0 }}>
         {steps.map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', background: step > i+1 ? gold : step === i+1 ? `linear-gradient(135deg,${gold},#b8860b)` : 'rgba(255,255,255,0.08)', border: `2px solid ${step >= i+1 ? gold : 'rgba(255,255,255,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: step >= i+1 ? '#000' : 'rgba(255,255,255,0.3)', fontFamily: 'Syne,sans-serif' }}>
+              <div className="mono" style={{ width: 26, height: 26, borderRadius: '50%', background: step >= i+1 ? 'var(--accent)' : 'var(--bg-subtle)', border: `1px solid ${step >= i+1 ? 'var(--accent)' : 'var(--border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: step >= i+1 ? '#fff' : 'var(--text-faint)' }}>
                 {step > i+1 ? '✓' : i+1}
               </div>
-              <div style={{ fontSize: 10, color: step === i+1 ? gold : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>{s}</div>
+              <div style={{ fontSize: 10, color: step === i+1 ? 'var(--accent)' : 'var(--text-faint)', whiteSpace: 'nowrap' }}>{s}</div>
             </div>
-            {i < steps.length-1 && <div style={{ width: 60, height: 2, background: step > i+1 ? gold : 'rgba(255,255,255,0.08)', margin: '0 6px 14px' }} />}
+            {i < steps.length-1 && <div style={{ width: 50, height: 1, background: step > i+1 ? 'var(--accent)' : 'var(--border)', margin: '0 4px 14px' }} />}
           </div>
         ))}
       </div>
 
-      {/* Form card */}
-      <div style={{ width: '100%', maxWidth: step === 1 ? 720 : 480, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '32px' }}>
+      <div className="card" style={{ width: '100%', maxWidth: step === 1 ? 680 : 440, padding: 28 }}>
 
-        {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '10px 14px', color: '#f87171', fontSize: 13, marginBottom: 20 }}>{error}</div>}
+        {error && <div className="card" style={{ padding: '10px 14px', marginBottom: 18, fontSize: 13, color: 'var(--danger)' }}>{error}</div>}
 
-        {/* STEP 1 — Choose Role */}
         {step === 1 && (
           <div>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, marginBottom: 6 }}>What brings you to NexWork?</h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 24 }}>Choose your primary role — you can add more later</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>What brings you to NexWork?</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>Choose your primary role — you can add more later</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 10 }}>
               {ROLES.map(role => (
-                <div key={role.id} onClick={() => f('primaryRole', role.id)}
-                  style={{ background: form.primaryRole === role.id ? `${role.color}18` : 'rgba(255,255,255,0.03)', border: `2px solid ${form.primaryRole === role.id ? role.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, padding: '18px 16px', cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { if (form.primaryRole !== role.id) e.currentTarget.style.borderColor = `${role.color}50`; }}
-                  onMouseLeave={e => { if (form.primaryRole !== role.id) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}>
-                  <div style={{ fontSize: 28, marginBottom: 8 }}>{role.icon}</div>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, color: form.primaryRole === role.id ? role.color : '#fff', marginBottom: 4 }}>{role.title}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, lineHeight: 1.5 }}>{role.desc}</div>
+                <div key={role.id} onClick={() => f('primaryRole', role.id)} className="card" style={{ padding: '14px 16px', cursor: 'pointer', borderColor: form.primaryRole === role.id ? 'var(--accent)' : 'var(--border)', background: form.primaryRole === role.id ? 'var(--accent-subtle)' : 'var(--bg-raised)' }}>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: form.primaryRole === role.id ? 'var(--accent)' : 'var(--text)', marginBottom: 4 }}>{role.title}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.5 }}>{role.desc}</div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* STEP 2 — Account */}
         {step === 2 && (
           <div>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, marginBottom: 6 }}>Create your account</h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 24 }}>You're signing up as: <strong style={{ color: gold }}>{ROLES.find(r => r.id === form.primaryRole)?.title}</strong></p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Create your account</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>Signing up as: <strong style={{ color: 'var(--accent)' }}>{ROLES.find(r => r.id === form.primaryRole)?.title}</strong></p>
             <div style={{ display: 'grid', gap: 14 }}>
-              <FI label="Full Name *" value={form.name} onChange={v => f('name', v)} placeholder="Ramana Vemunoori" />
-              <FI label="Email Address *" value={form.email} onChange={v => f('email', v)} type="email" placeholder="you@email.com" />
-              <FI label="Phone Number" value={form.phone} onChange={v => f('phone', v)} placeholder="+91 99999 99999" />
-              <FI label="Password * (min 6 characters)" value={form.password} onChange={v => f('password', v)} type="password" placeholder="Create a strong password" />
+              <FI label="Full name" value={form.name} onChange={v => f('name', v)} />
+              <FI label="Email address" value={form.email} onChange={v => f('email', v)} type="email" />
+              <FI label="Phone number" value={form.phone} onChange={v => f('phone', v)} />
+              <FI label="Password (min 6 characters)" value={form.password} onChange={v => f('password', v)} type="password" />
               <div>
-                <label style={ls}>Preferred Language</label>
-                <select value={form.language} onChange={e => f('language', e.target.value)} style={is}>
-                  <option value="en">English</option>
-                  <option value="te">Telugu</option>
-                  <option value="hi">Hindi</option>
+                <label style={ls}>Preferred language</label>
+                <select value={form.language} onChange={e => f('language', e.target.value)} className="input">
+                  <option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option>
                 </select>
               </div>
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, marginTop: 14 }}>Already have an account? <Link to="/login" style={{ color: gold }}>Sign in</Link></p>
+            <p style={{ color: 'var(--text-faint)', fontSize: 12, marginTop: 14 }}>Already have an account? <Link to="/login" style={{ color: 'var(--accent)' }}>Sign in</Link></p>
           </div>
         )}
 
-        {/* STEP 3 — Location */}
         {step === 3 && (
           <div>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, marginBottom: 6 }}>Where are you based?</h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 24 }}>This helps match you with local opportunities</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Where are you based?</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>This helps match you with local opportunities</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <FI label="City *" value={form.city} onChange={v => f('city', v)} placeholder="Warangal" />
-              <FI label="State" value={form.state} onChange={v => f('state', v)} placeholder="Telangana" />
-              <div>
-                <label style={ls}>Country</label>
-                <select value={form.country} onChange={e => f('country', e.target.value)} style={is}>
-                  <option>India</option>
-                  <option>United States</option>
-                  <option>United Kingdom</option>
-                  <option>Other</option>
-                </select>
-              </div>
+              <FI label="City" value={form.city} onChange={v => f('city', v)} />
+              <FI label="State" value={form.state} onChange={v => f('state', v)} />
+              <div><label style={ls}>Country</label><select value={form.country} onChange={e => f('country', e.target.value)} className="input"><option>India</option><option>United States</option><option>United Kingdom</option><option>Other</option></select></div>
             </div>
           </div>
         )}
 
-        {/* STEP 4 — Skills & Bio */}
         {step === 4 && (
           <div>
-            <h2 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, marginBottom: 6 }}>Almost done!</h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 24 }}>Add your skills and a headline to stand out</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Almost done</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>Add skills and a headline to stand out</p>
             <div style={{ display: 'grid', gap: 14 }}>
-              <FI label="Professional Headline" value={form.headline} onChange={v => f('headline', v)} placeholder="e.g. AI Prompt Engineer | Data Annotation Expert" />
+              <FI label="Professional headline" value={form.headline} onChange={v => f('headline', v)} placeholder="e.g. AI Prompt Engineer | Data Annotation Expert" />
               <div>
                 <label style={ls}>Skills</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   {form.skills.map(s => (
-                    <span key={s} style={{ background: `${gold}18`, border: `1px solid ${gold}35`, color: gold, fontSize: 12, padding: '4px 10px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 5 }}>
-                      {s} <button onClick={() => removeSkill(s)} style={{ background: 'none', border: 'none', color: gold, cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>×</button>
+                    <span key={s} className="tag tag-accent" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      {s} <button onClick={() => removeSkill(s)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>×</button>
                     </span>
                   ))}
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <input value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill(skillInput))} placeholder="Type a skill and press Enter" style={{ ...is, flex: 1 }} />
-                  <button onClick={() => addSkill(skillInput)} style={{ background: gold, color: '#000', border: 'none', borderRadius: 8, padding: '0 16px', fontWeight: 700, cursor: 'pointer' }}>Add</button>
+                  <input value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill(skillInput))} placeholder="Type a skill and press Enter" className="input" />
+                  <button onClick={() => addSkill(skillInput)} className="btn btn-secondary">Add</button>
                 </div>
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Suggestions:</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {(SKILL_SUGGESTIONS[form.primaryRole] || []).filter(s => !form.skills.includes(s)).slice(0, 6).map(s => (
-                      <button key={s} onClick={() => addSkill(s)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontSize: 11, padding: '4px 10px', borderRadius: 14, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>+ {s}</button>
-                    ))}
-                  </div>
+                <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {(SKILL_SUGGESTIONS[form.primaryRole] || []).filter(s => !form.skills.includes(s)).slice(0, 6).map(s => (
+                    <button key={s} onClick={() => addSkill(s)} className="tag" style={{ cursor: 'pointer' }}>+ {s}</button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Navigation */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
-          <div>{step > 1 && <button onClick={() => setStep(s => s-1)} style={btnOut}>← Back</button>}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
+          <div>{step > 1 && <button onClick={() => setStep(s => s-1)} className="btn btn-secondary">← Back</button>}</div>
           <div>
             {step < 4
-              ? <button onClick={() => canNext() && setStep(s => s+1)} style={{ ...btnGold, opacity: canNext() ? 1 : 0.4, cursor: canNext() ? 'pointer' : 'not-allowed' }}>Continue →</button>
-              : <button onClick={handleSubmit} disabled={loading} style={{ ...btnGold, opacity: loading ? 0.7 : 1 }}>{loading ? '⏳ Creating...' : '🚀 Create Account'}</button>
+              ? <button onClick={() => canNext() && setStep(s => s+1)} disabled={!canNext()} className="btn btn-primary" style={{ opacity: canNext() ? 1 : 0.4 }}>Continue →</button>
+              : <button onClick={handleSubmit} disabled={loading} className="btn btn-primary">{loading ? 'Creating…' : 'Create account'}</button>
             }
           </div>
         </div>
       </div>
 
-      <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, marginTop: 20 }}>By creating an account you agree to our Terms of Service and Privacy Policy</p>
-
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
+      <p style={{ color: 'var(--text-faint)', fontSize: 11, marginTop: 18 }}>By creating an account you agree to our Terms of Service and Privacy Policy</p>
     </div>
   );
 }
 
-const FI = ({ label, value, onChange, type = 'text', placeholder, span }) => (
-  <div style={span === 2 ? { gridColumn: '1/-1' } : {}}>
-    <label style={ls}>{label}</label>
-    <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={is} />
-  </div>
+const FI = ({ label, value, onChange, type = 'text', placeholder }) => (
+  <div><label style={ls}>{label}</label><input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="input" /></div>
 );
-
-const ls = { display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 5 };
-const is = { width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9, padding: '11px 13px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'DM Sans,sans-serif' };
-const btnGold = { background: 'linear-gradient(135deg,#d4a853,#b8860b)', color: '#000', border: 'none', borderRadius: 9, padding: '12px 26px', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' };
-const btnOut  = { background: 'transparent', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 9, padding: '12px 24px', fontWeight: 500, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' };
+const ls = { display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' };

@@ -1,0 +1,118 @@
+/* ===========================================================
+   NexWork Design System
+   Inspired by Mercor / Linear: restraint over decoration.
+   No gradients. No glow. No emoji icons in UI chrome.
+   One accent color. Real data in mono type. Hairline borders.
+   =========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ---- Light theme (Direction A) ---- */
+  --bg:            #FFFFFF;
+  --bg-subtle:     #FAFAFA;
+  --bg-raised:     #FFFFFF;
+  --border:        #E5E5E5;
+  --border-strong: #D0D0D0;
+  --text:          #0A0A0A;
+  --text-muted:    #6B6B6B;
+  --text-faint:    #A0A0A0;
+  --accent:        #1E3FE0;
+  --accent-text:   #FFFFFF;
+  --accent-subtle: #EEF1FD;
+  --success:       #16794D;
+  --success-bg:    #ECF8F1;
+  --warning:       #92400E;
+  --warning-bg:    #FEF6E7;
+  --danger:        #B42318;
+  --danger-bg:     #FEF1F0;
+  --shadow:        0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+[data-theme="dark"] {
+  /* ---- Dark theme (Direction B) ---- */
+  --bg:            #0C0C0D;
+  --bg-subtle:     #111113;
+  --bg-raised:     #16161A;
+  --border:        #232325;
+  --border-strong: #333336;
+  --text:          #F2F2F2;
+  --text-muted:    #8A8A8E;
+  --text-faint:    #5C5C60;
+  --accent:        #5E6AD2;
+  --accent-text:   #FFFFFF;
+  --accent-subtle: #1A1D33;
+  --success:       #4ADE80;
+  --success-bg:    #122019;
+  --warning:       #F5A524;
+  --warning-bg:    #2A1F0E;
+  --danger:        #F87171;
+  --danger-bg:     #2A1414;
+  --shadow:        0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+
+.mono { font-family: 'IBM Plex Mono', monospace; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* Utility: hairline border everywhere, never heavier */
+.hairline { border: 1px solid var(--border); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 8px;
+  border: 1px solid transparent; transition: all 0.15s ease; white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: var(--accent-text); }
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary { background: var(--bg); color: var(--text); border-color: var(--border-strong); }
+.btn-secondary:hover { background: var(--bg-subtle); }
+.btn-ghost { background: transparent; color: var(--text-muted); }
+.btn-ghost:hover { color: var(--text); }
+
+/* Cards */
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* Inputs */
+.input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border-strong);
+  border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.15s ease;
+}
+.input:focus { border-color: var(--accent); }
+.input::placeholder { color: var(--text-faint); }
+
+/* Tag / pill */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 500;
+  padding: 3px 9px; border-radius: 6px; background: var(--bg-subtle); color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.tag-accent { background: var(--accent-subtle); color: var(--accent); border-color: transparent; }
+.tag-success { background: var(--success-bg); color: var(--success); border-color: transparent; }
+.tag-warning { background: var(--warning-bg); color: var(--warning); border-color: transparent; }
+.tag-danger { background: var(--danger-bg); color: var(--danger); border-color: transparent; }

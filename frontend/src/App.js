@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import './styles/theme.css';
 
 // Pages
 import LandingPage  from './pages/LandingPage';
@@ -40,18 +42,16 @@ function AdminOnly({ children }) {
 }
 
 const Loader = () => (
-  <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#07070f', color:'#d4a853', fontSize:18, fontFamily:'Syne,sans-serif', fontWeight:700, gap:12 }}>
-    <div style={{ width:32, height:32, borderRadius:8, background:'linear-gradient(135deg,#d4a853,#b8860b)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900, color:'#000', fontSize:14 }}>N</div>
-    Loading NexWork...
+  <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'var(--bg)', color:'var(--text-muted)', fontSize:13 }}>
+    Loading…
   </div>
 );
 
-const ComingSoon = ({ title, icon='🚧' }) => (
-  <div style={{ minHeight:'100vh', background:'#07070f', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:16, fontFamily:'DM Sans,sans-serif', color:'#fff', paddingTop:80 }}>
-    <div style={{ fontSize:52 }}>{icon}</div>
-    <h2 style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:24 }}>{title}</h2>
-    <p style={{ color:'rgba(255,255,255,0.4)', fontSize:14 }}>Coming very soon!</p>
-    <a href="/dashboard" style={{ background:'linear-gradient(135deg,#d4a853,#b8860b)', color:'#000', padding:'11px 24px', borderRadius:9, textDecoration:'none', fontWeight:700, fontSize:14 }}>← Dashboard</a>
+const ComingSoon = ({ title }) => (
+  <div style={{ minHeight:'100vh', background:'var(--bg)', color:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:14 }}>
+    <h2 style={{ fontSize:18, fontWeight:600 }}>{title}</h2>
+    <p style={{ color:'var(--text-muted)', fontSize:13 }}>Coming soon.</p>
+    <a href="/dashboard" className="btn btn-secondary">← Dashboard</a>
   </div>
 );
 
@@ -74,41 +74,37 @@ function LoginPage() {
     finally { setLoading(false); }
   };
 
-  const gold = '#d4a853';
   return (
-    <div style={{ minHeight:'100vh', background:'#07070f', display:'flex', alignItems:'center', justifyContent:'center', padding:20, fontFamily:'DM Sans,sans-serif' }}>
-      <div style={{ width:'100%', maxWidth:420, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:36 }}>
-        <div style={{ textAlign:'center', marginBottom:28 }}>
-          <a href="/" style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:38, height:38, borderRadius:10, background:`linear-gradient(135deg,${gold},#b8860b)`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:900, color:'#000', fontSize:17 }}>N</div>
-            <span style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:gold }}>NexWork</span>
-          </a>
-          <h2 style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:'#fff', marginTop:20, marginBottom:4 }}>Welcome Back 👋</h2>
-          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:13 }}>Sign in to your NexWork account</p>
+    <div style={{ minHeight:'100vh', background:'var(--bg)', color:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
+      <div className="card" style={{ width:'100%', maxWidth:380, padding:32 }}>
+        <div style={{ textAlign:'center', marginBottom:24 }}>
+          <a href="/" className="mono" style={{ fontWeight:600, fontSize:15, color:'var(--text)' }}>NexWork</a>
+          <h2 style={{ fontSize:18, fontWeight:600, marginTop:18, marginBottom:4 }}>Welcome back</h2>
+          <p style={{ color:'var(--text-muted)', fontSize:13 }}>Sign in to your account</p>
         </div>
-        {error && <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:8, padding:'10px 14px', color:'#f87171', fontSize:13, marginBottom:16 }}>{error}</div>}
+        {error && <div className="card" style={{ padding:'10px 14px', marginBottom:16, fontSize:13, color:'var(--danger)' }}>{error}</div>}
         <form onSubmit={handleSubmit}>
           {[['Email','email','email'],['Password','password','password']].map(([label,key,type]) => (
             <div key={key} style={{ marginBottom:14 }}>
-              <label style={{ display:'block', fontSize:12, color:'rgba(255,255,255,0.4)', marginBottom:5 }}>{label}</label>
-              <input type={type} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:9, padding:'12px 13px', color:'#fff', fontSize:14, outline:'none', fontFamily:'DM Sans,sans-serif' }} onFocus={e=>e.target.style.borderColor=gold} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+              <label style={{ display:'block', fontSize:12, color:'var(--text-muted)', marginBottom:5 }}>{label}</label>
+              <input type={type} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required className="input" />
             </div>
           ))}
-          <button type="submit" disabled={loading} style={{ width:'100%', background:`linear-gradient(135deg,${gold},#b8860b)`, color:'#000', border:'none', borderRadius:9, padding:13, fontWeight:800, fontSize:15, cursor:loading?'not-allowed':'pointer', fontFamily:'Syne,sans-serif', marginTop:4, opacity:loading?0.7:1 }}>
-            {loading ? '⏳ Signing in...' : '→ Sign In'}
+          <button type="submit" disabled={loading} className="btn btn-primary" style={{ width:'100%', marginTop:4 }}>
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-        <p style={{ textAlign:'center', marginTop:18, fontSize:14, color:'rgba(255,255,255,0.4)' }}>
-          No account? <a href="/onboarding" style={{ color:gold, fontWeight:600, textDecoration:'none' }}>Create one free →</a>
+        <p style={{ textAlign:'center', marginTop:16, fontSize:13, color:'var(--text-muted)' }}>
+          No account? <a href="/onboarding" style={{ color:'var(--accent)', fontWeight:500 }}>Create one free →</a>
         </p>
       </div>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800;900&family=DM+Sans&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
     </div>
   );
 }
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -152,5 +148,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }

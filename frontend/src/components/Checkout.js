@@ -21,7 +21,7 @@ const loadRazorpayScript = () => {
  */
 export default function Checkout({ orderId, amount, token, user, onSuccess, onError, label = 'Pay Now' }) {
   const [loading, setLoading] = useState(false);
-  const gold = '#d4a853';
+  const accentColor = '#5E6AD2';
 
   const pay = async () => {
     setLoading(true);
@@ -42,7 +42,7 @@ export default function Checkout({ orderId, amount, token, user, onSuccess, onEr
         description: 'Service Payment',
         order_id: data.razorpayOrderId,
         prefill: { name: user?.name || '', email: user?.email || '', contact: user?.phone || '' },
-        theme: { color: gold },
+        theme: { color: accentColor },
         handler: async function (response) {
           try {
             await axios.post(`${API}/api/payments/verify`, {
@@ -71,12 +71,8 @@ export default function Checkout({ orderId, amount, token, user, onSuccess, onEr
   };
 
   return (
-    <button onClick={pay} disabled={loading} style={{
-      background: `linear-gradient(135deg,${gold},#b8860b)`, color:'#000', border:'none', borderRadius:9,
-      padding:'12px 28px', fontWeight:800, fontSize:14, cursor: loading ? 'not-allowed' : 'pointer',
-      fontFamily:'DM Sans,sans-serif', opacity: loading ? 0.7 : 1, width:'100%'
-    }}>
-      {loading ? '⏳ Processing...' : `💳 ${label} — ₹${amount?.toLocaleString()}`}
+    <button onClick={pay} disabled={loading} className="btn btn-primary" style={{ width:'100%', opacity: loading ? 0.7 : 1 }}>
+      {loading ? 'Processing…' : `${label} — ₹${amount?.toLocaleString()}`}
     </button>
   );
 }
