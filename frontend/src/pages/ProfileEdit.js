@@ -11,15 +11,17 @@ export default function ProfileEdit() {
   const { user, token, updateUser } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('basic');
-  const [form, setForm] = useState({ name:'', headline:'', bio:'', phone:'', city:'', state:'', country:'India', hourlyRate:'', availability:'available', linkedinUrl:'', githubUrl:'', websiteUrl:'', skills:[], experience:[], education:[] });
+  const [form, setForm] = useState({ name:'', headline:'', bio:'', phone:'', city:'', state:'', country:'India', hourlyRate:'', availability:'available', linkedinUrl:'', githubUrl:'', websiteUrl:'', skills:[], experience:[], education:[], portfolio:[] });
   const [skillInput, setSkillInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
   const [newExp, setNewExp] = useState({ title:'', company:'', from:'', to:'', current:false, desc:'' });
   const [newEdu, setNewEdu] = useState({ degree:'', institution:'', year:'', grade:'' });
+  const [newPortfolio, setNewPortfolio] = useState({ title:'', desc:'', url:'', image:'', tags:[] });
+  const [portfolioTagInput, setPortfolioTagInput] = useState('');
 
   useEffect(() => {
-    if (user) setForm({ name:user.name||'', headline:user.headline||'', bio:user.bio||'', phone:user.phone||'', city:user.city||'', state:user.state||'', country:user.country||'India', hourlyRate:user.hourlyRate||'', availability:user.availability||'available', linkedinUrl:user.linkedinUrl||'', githubUrl:user.githubUrl||'', websiteUrl:user.websiteUrl||'', skills:user.skills||[], experience:user.experience||[], education:user.education||[] });
+    if (user) setForm({ name:user.name||'', headline:user.headline||'', bio:user.bio||'', phone:user.phone||'', city:user.city||'', state:user.state||'', country:user.country||'India', hourlyRate:user.hourlyRate||'', availability:user.availability||'available', linkedinUrl:user.linkedinUrl||'', githubUrl:user.githubUrl||'', websiteUrl:user.websiteUrl||'', skills:user.skills||[], experience:user.experience||[], education:user.education||[], portfolio:user.portfolio||[] });
   }, [user]);
 
   const f = (k,v) => setForm(p=>({...p,[k]:v}));
@@ -30,6 +32,9 @@ export default function ProfileEdit() {
   const removeExp = (i) => f('experience', form.experience.filter((_,idx)=>idx!==i));
   const addEducation = () => { if (!newEdu.degree||!newEdu.institution) return; f('education', [...form.education, newEdu]); setNewEdu({ degree:'', institution:'', year:'', grade:'' }); };
   const removeEdu = (i) => f('education', form.education.filter((_,idx)=>idx!==i));
+  const addPortfolioTag = (t) => { if (!t.trim() || newPortfolio.tags.includes(t.trim())) return; setNewPortfolio(p => ({ ...p, tags: [...p.tags, t.trim()] })); setPortfolioTagInput(''); };
+  const addPortfolioItem = () => { if (!newPortfolio.title) return; f('portfolio', [...form.portfolio, newPortfolio]); setNewPortfolio({ title:'', desc:'', url:'', image:'', tags:[] }); };
+  const removePortfolioItem = (i) => f('portfolio', form.portfolio.filter((_,idx)=>idx!==i));
 
   const save = async () => {
     setLoading(true); setMsg('');
@@ -42,7 +47,7 @@ export default function ProfileEdit() {
     finally { setLoading(false); }
   };
 
-  const tabs = [['basic','Basic info'],['skills','Skills'],['experience','Experience'],['education','Education'],['social','Social links']];
+  const tabs = [['basic','Basic info'],['skills','Skills'],['portfolio','Portfolio'],['experience','Experience'],['education','Education'],['social','Social links']];
   if (!user) return null;
 
   return (
@@ -97,6 +102,59 @@ export default function ProfileEdit() {
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
                 {SKILL_SUGGESTIONS.filter(s=>!form.skills.find(x=>x.name===s)).map(s => <button key={s} onClick={()=>addSkill(s)} className="tag" style={{ cursor:'pointer' }}>+ {s}</button>)}
+              </div>
+            </div>
+          )}
+
+          {tab==='portfolio' && (
+            <div>
+              <p style={{ color:'var(--text-muted)', fontSize:12, marginBottom:18, lineHeight:1.6 }}>
+                Show real work — a link to a deployed project, a GitHub repo, a design file, or a finished piece. Clients are far more likely to hire someone with visible proof of work than a list of skills alone.
+              </p>
+
+              {form.portfolio.length > 0 && (
+                <div style={{ display:'grid', gap:10, marginBottom:18 }}>
+                  {form.portfolio.map((item,i) => (
+                    <div key={i} className="card" style={{ padding:'14px 16px', position:'relative' }}>
+                      <button onClick={()=>removePortfolioItem(i)} className="btn btn-ghost" style={{ position:'absolute', top:10, right:10, color:'var(--danger)', fontSize:11 }}>Remove</button>
+                      <div style={{ display:'flex', gap:12 }}>
+                        {item.image
+                          ? <img src={item.image} alt="" style={{ width:56, height:56, borderRadius:8, objectFit:'cover', flexShrink:0, border:'1px solid var(--border)' }} onError={e=>e.target.style.display='none'} />
+                          : <div style={{ width:56, height:56, borderRadius:8, background:'var(--bg-subtle)', border:'1px solid var(--border)', flexShrink:0 }} />
+                        }
+                        <div style={{ minWidth:0 }}>
+                          <div style={{ fontWeight:600, fontSize:13, marginBottom:3 }}>{item.title}</div>
+                          {item.desc && <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:4, lineHeight:1.5 }}>{item.desc}</div>}
+                          {item.url && <a href={item.url} target="_blank" rel="noreferrer" style={{ fontSize:12, color:'var(--accent)' }}>{item.url.replace(/^https?:\/\//,'').slice(0,40)}{item.url.length>40?'…':''} →</a>}
+                          {item.tags?.length > 0 && <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:6 }}>{item.tags.map(t=><span key={t} className="tag" style={{ fontSize:10 }}>{t}</span>)}</div>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="card" style={{ padding:18, background:'var(--bg-subtle)' }}>
+                <h4 style={{ fontSize:13, fontWeight:600, marginBottom:14 }}>Add a portfolio item</h4>
+                <div style={{ display:'grid', gap:12, marginBottom:12 }}>
+                  <FI label="Title" value={newPortfolio.title} onChange={v=>setNewPortfolio(p=>({...p,title:v}))} placeholder="e.g. E-commerce dashboard redesign" />
+                  <FI label="Description" value={newPortfolio.desc} onChange={v=>setNewPortfolio(p=>({...p,desc:v}))} textarea placeholder="What did you build, and what was the outcome?" />
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    <FI label="Link (live site, repo, file)" value={newPortfolio.url} onChange={v=>setNewPortfolio(p=>({...p,url:v}))} placeholder="https://…" />
+                    <FI label="Image URL (optional)" value={newPortfolio.image} onChange={v=>setNewPortfolio(p=>({...p,image:v}))} placeholder="https://…" />
+                  </div>
+                  <div>
+                    <label style={ls}>Tags</label>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:8 }}>
+                      {newPortfolio.tags.map(t => <span key={t} className="tag tag-accent" style={{ display:'flex', alignItems:'center', gap:5 }}>{t}<button onClick={()=>setNewPortfolio(p=>({...p,tags:p.tags.filter(x=>x!==t)}))} style={{background:'none',border:'none',color:'inherit',cursor:'pointer'}}>×</button></span>)}
+                    </div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <input value={portfolioTagInput} onChange={e=>setPortfolioTagInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&(e.preventDefault(),addPortfolioTag(portfolioTagInput))} placeholder="e.g. React, Figma" className="input" />
+                      <button onClick={()=>addPortfolioTag(portfolioTagInput)} className="btn btn-secondary">Add tag</button>
+                    </div>
+                  </div>
+                </div>
+                <button onClick={addPortfolioItem} disabled={!newPortfolio.title} className="btn btn-primary" style={{ opacity: newPortfolio.title?1:0.5 }}>Add to portfolio</button>
               </div>
             </div>
           )}

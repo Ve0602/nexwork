@@ -13,6 +13,7 @@ export default function TalentProfile() {
   const { token, user: currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [services, setServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { load(); }, [id]);
@@ -22,6 +23,7 @@ export default function TalentProfile() {
       const { data } = await axios.get(`${API}/api/users/${id}`);
       setProfile(data);
       try { const sRes = await axios.get(`${API}/api/services?search=${data.name}`); setServices((sRes.data.services||[]).filter(s => s.providerId?._id === id)); } catch(e) {}
+      try { const rRes = await axios.get(`${API}/api/orders/reviews/${id}`); setReviews(rRes.data || []); } catch(e) {}
     } catch(e) { console.log(e.message); }
     finally { setLoading(false); }
   };
@@ -76,6 +78,27 @@ export default function TalentProfile() {
           <div>
             {profile.bio && <div className="card" style={{ padding: 20, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>About</h3><p style={{ color:'var(--text-muted)', fontSize:13, lineHeight:1.8, whiteSpace:'pre-wrap' }}>{profile.bio}</p></div>}
 
+            {(profile.portfolio||[]).length > 0 && (
+              <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Portfolio</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+                  {profile.portfolio.map((item, i) => (
+                    <a key={i} href={item.url || undefined} target={item.url ? '_blank' : undefined} rel="noreferrer" className="card card-interactive" style={{ padding: 0, overflow: 'hidden', cursor: item.url ? 'pointer' : 'default', display: 'block' }}>
+                      {item.image
+                        ? <img src={item.image} alt={item.title} style={{ width: '100%', height: 110, objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display = 'none'; }} />
+                        : <div style={{ width: '100%', height: 80, background: 'var(--bg-subtle)' }} />
+                      }
+                      <div style={{ padding: '10px 12px' }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>{item.title}</div>
+                        {item.desc && <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: 6 }}>{item.desc.slice(0, 80)}{item.desc.length > 80 ? '…' : ''}</div>}
+                        {item.tags?.length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>{item.tags.slice(0,3).map(t => <span key={t} className="tag" style={{ fontSize: 10 }}>{t}</span>)}</div>}
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {(profile.skills||[]).length > 0 && (
               <div className="card" style={{ padding: 20, marginBottom: 16 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>Skills</h3>
@@ -119,6 +142,33 @@ export default function TalentProfile() {
                       <span style={{ fontSize: 13, fontWeight: 500 }}>{s.title}</span>
                       {s.packages?.[0] && <span className="mono" style={{ fontSize: 13, fontWeight: 600 }}>from ₹{s.packages[0].price}</span>}
                     </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {reviews.length > 0 && (
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Reviews ({reviews.length})</h3>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {reviews.map(r => (
+                    <div key={r._id} className="card" style={{ padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {r.clientId?.photo
+                            ? <img src={r.clientId.photo} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} />
+                            : <div className="mono" style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--accent-subtle)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600 }}>{r.clientId?.name?.[0] || '?'}</div>
+                          }
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600 }}>{r.clientId?.name || 'Client'}</div>
+                            {r.serviceId?.title && <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{r.serviceId.title}</div>}
+                          </div>
+                        </div>
+                        <div style={{ color: 'var(--accent)', fontSize: 12, flexShrink: 0 }}>{'★'.repeat(r.rating)}<span style={{ color: 'var(--border-strong)' }}>{'★'.repeat(5 - r.rating)}</span></div>
+                      </div>
+                      <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>{r.review}</p>
+                      {r.completedAt && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>{new Date(r.completedAt).toLocaleDateString()}</div>}
+                    </div>
                   ))}
                 </div>
               </div>

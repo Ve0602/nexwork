@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopNav from '../components/TopNav';
+import Skeleton from '../components/Skeleton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const CATEGORIES = ['All','AI & Machine Learning','Web Development','Data Science','Design & Creative','Content Writing','Tailoring & Fashion','Home Services','Photography','Teaching','Mobile Development','Other'];
@@ -95,13 +96,13 @@ export default function FindWork() {
           <div>
             {msg && <div className="card" style={{ padding: '10px 14px', marginBottom: 16, fontSize: 13, display: 'flex', justifyContent: 'space-between' }}>{msg}<button onClick={()=>setMsg('')} className="btn btn-ghost" style={{ padding: 0 }}>✕</button></div>}
 
-            {loading ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>Loading projects…</div>
+            {loading ? <Skeleton.List count={5} />
             : projects.length===0 ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>No projects found. Try different keywords.</div>
             : (
               <>
                 <div style={{ display: 'grid', gap: 12 }}>
                   {projects.map(p => (
-                    <div key={p._id} className="card" style={{ padding: '18px 20px' }}>
+                    <div key={p._id} className="card card-interactive" style={{ padding: '18px 20px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>

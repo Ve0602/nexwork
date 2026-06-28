@@ -81,21 +81,31 @@ input, textarea, select { font-family: inherit; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 8px;
-  border: 1px solid transparent; transition: all 0.15s ease; white-space: nowrap;
+  border: 1px solid transparent; transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn-primary { background: var(--accent); color: var(--accent-text); }
-.btn-primary:hover { opacity: 0.9; }
+.btn-primary:hover:not(:disabled) { opacity: 0.88; }
 .btn-secondary { background: var(--bg); color: var(--text); border-color: var(--border-strong); }
-.btn-secondary:hover { background: var(--bg-subtle); }
+.btn-secondary:hover:not(:disabled) { background: var(--bg-subtle); border-color: var(--text-faint); }
 .btn-ghost { background: transparent; color: var(--text-muted); }
-.btn-ghost:hover { color: var(--text); }
+.btn-ghost:hover:not(:disabled) { color: var(--text); background: var(--bg-subtle); }
 
 /* Cards */
 .card {
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+.card-interactive:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+}
+.card-raised { box-shadow: var(--shadow); }
 
 /* Inputs */
 .input {
@@ -104,7 +114,20 @@ input, textarea, select { font-family: inherit; }
   outline: none; transition: border-color 0.15s ease;
 }
 .input:focus { border-color: var(--accent); }
+.input:focus-visible { outline: 2px solid var(--accent-subtle); outline-offset: 1px; }
 .input::placeholder { color: var(--text-faint); }
+
+/* Skeleton loading — replaces plain "Loading…" text across the app */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--border) 37%, var(--bg-subtle) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
 /* Tag / pill */
 .tag {

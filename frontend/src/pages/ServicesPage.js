@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import TopNav from '../components/TopNav';
+import Skeleton from '../components/Skeleton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const CATEGORIES = ['All','AI & Machine Learning','Web Development','Graphic Design','Content Writing','Tailoring & Fashion','Photography','Home Services','Teaching','Data Science','Video Editing','SEO'];
@@ -55,7 +56,7 @@ export default function ServicesPage() {
           ))}
         </div>
 
-        {loading ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>Loading services…</div>
+        {loading ? <Skeleton.List count={6} />
         : services.length === 0 ? (
           <div style={{ textAlign:'center', padding:60 }}>
             <p style={{ color:'var(--text-muted)', fontSize:13, marginBottom: 16 }}>No services in this category yet.</p>
@@ -65,9 +66,7 @@ export default function ServicesPage() {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
               {services.map(s => (
-                <div key={s._id} onClick={() => setSelected(s)} className="card" style={{ overflow: 'hidden', cursor: 'pointer' }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-strong)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                <div key={s._id} onClick={() => setSelected(s)} className="card card-interactive" style={{ overflow: 'hidden', cursor: 'pointer' }}>
 
                   {s.images?.[0]
                     ? <img src={s.images[0]} alt={s.title} style={{ width: '100%', height: 150, objectFit: 'cover', display: 'block' }} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopNav from '../components/TopNav';
+import Skeleton from '../components/Skeleton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const JOB_TYPES = ['All','fulltime','parttime','contract','internship','freelance'];
@@ -79,12 +80,12 @@ export default function JobsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 0 }}>
           <div style={{ paddingRight: 24, borderRight: '1px solid var(--border)' }}>
-            {loading ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>Loading jobs…</div>
+            {loading ? <Skeleton.List count={5} />
             : jobs.length===0 ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>No jobs found.</div>
             : (
               <div style={{ display: 'grid', gap: 10 }}>
                 {jobs.map(j => (
-                  <div key={j._id} onClick={() => setSelected(j)} className="card" style={{ padding: '16px 18px', cursor: 'pointer', borderColor: selected?._id===j._id ? 'var(--accent)' : 'var(--border)' }}>
+                  <div key={j._id} onClick={() => setSelected(j)} className="card card-interactive" style={{ padding: '16px 18px', cursor: 'pointer', borderColor: selected?._id===j._id ? 'var(--accent)' : 'var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>

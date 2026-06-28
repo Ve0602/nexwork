@@ -104,4 +104,17 @@ router.post('/:id/review', auth, async (req, res) => {
   } catch (e) { res.status(400).json({ message: e.message }); }
 });
 
+// Public: get written reviews for a provider — no auth required, this is what builds trust pre-signup
+router.get('/reviews/:providerId', async (req, res) => {
+  try {
+    const reviews = await Order.find({ providerId: req.params.providerId, rating: { $gt: 0 }, review: { $exists: true, $ne: '' } })
+      .populate('clientId', 'name photo')
+      .populate('serviceId', 'title')
+      .sort({ completedAt: -1 })
+      .limit(50)
+      .select('rating review completedAt clientId serviceId');
+    res.json(reviews);
+  } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
 module.exports = router;

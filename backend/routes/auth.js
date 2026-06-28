@@ -105,6 +105,6 @@ router.post('/add-role', auth, async (req, res) => {
   } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
-const safeUser = (u) => ({ id: u._id, name: u.name, email: u.email, photo: u.photo, phone: u.phone, roles: u.roles, primaryRole: u.primaryRole, headline: u.headline, bio: u.bio, location: u.location, city: u.city, skills: u.skills, hourlyRate: u.hourlyRate, availability: u.availability, rating: u.rating, reviewCount: u.reviewCount, plan: u.plan, isVerified: u.isVerified, emailVerified: u.emailVerified });
+const safeUser = (u) => ({ id: u._id, name: u.name, email: u.email, photo: u.photo, phone: u.phone, roles: u.roles, primaryRole: u.primaryRole, headline: u.headline, bio: u.bio, location: u.location, city: u.city, state: u.state, country: u.country, skills: u.skills, experience: u.experience, education: u.education, portfolio: u.portfolio, hourlyRate: u.hourlyRate, availability: u.availability, rating: u.rating, reviewCount: u.reviewCount, totalEarned: u.totalEarned, totalJobs: u.totalJobs, plan: u.plan, isVerified: u.isVerified, emailVerified: u.emailVerified, linkedinUrl: u.linkedinUrl, githubUrl: u.githubUrl, websiteUrl: u.websiteUrl });
 
 module.exports = router;

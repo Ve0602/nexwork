@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import TopNav from '../components/TopNav';
+import Skeleton from '../components/Skeleton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const ROLES = ['All','freelancer','service_provider','mentor','trainer','professional'];
@@ -74,13 +75,13 @@ export default function FindTalent() {
           </div>
 
           <div>
-            {loading ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>Finding talent…</div>
+            {loading ? <Skeleton.List count={5} />
             : users.length===0 ? <div style={{ textAlign:'center', padding:60, color:'var(--text-muted)', fontSize:13 }}>No talent found. Try different filters.</div>
             : (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
                   {users.map(u => (
-                    <div key={u._id} className="card" style={{ padding: 18, position: 'relative' }}>
+                    <div key={u._id} className="card card-interactive" style={{ padding: 18, position: 'relative' }}>
                       {u.isVerified && <span className="tag tag-success" style={{ position:'absolute', top:14, right:14 }}>Verified</span>}
                       <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
                         {u.photo
