@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopNav from '../components/TopNav';
+import ReportButton from '../components/ReportButton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const ROLE_LABELS = { freelancer:'Freelancer', client:'Client', student:'Student', jobseeker:'Job seeker', service_provider:'Service provider', mentor:'Mentor', trainer:'Trainer', recruiter:'Recruiter', professional:'Professional', admin:'Admin' };
@@ -62,7 +63,12 @@ export default function TalentProfile() {
               {profile.hourlyRate > 0 && <span style={{ color:'var(--success)' }}>₹{profile.hourlyRate}/hr</span>}
             </div>
           </div>
-          {!isOwnProfile && token && <Link to={`/messages?to=${profile._id}`} className="btn btn-primary" style={{ flexShrink: 0 }}>Message</Link>}
+          {!isOwnProfile && token && (
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+              <Link to={`/messages?to=${profile._id}`} className="btn btn-primary">Message</Link>
+              <ReportButton targetType="user" targetId={profile._id} />
+            </div>
+          )}
           {isOwnProfile && <Link to="/profile/edit" className="btn btn-secondary" style={{ flexShrink: 0 }}>Edit profile</Link>}
         </div>
 

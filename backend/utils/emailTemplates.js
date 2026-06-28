@@ -77,4 +77,17 @@ module.exports = {
     <h2 style="color:#fff; font-size:20px; margin:0 0 12px;">💸 Withdrawal Request Submitted</h2>
     <p style="color:rgba(255,255,255,0.6); font-size:14px; line-height:1.7;">Hi ${userName}, your withdrawal request for <strong style="color:${gold}">₹${amount}</strong> has been submitted. It will be processed within 24-48 hours.</p>
   `),
+
+  verifyEmail: ({ userName, verifyUrl }) => wrap(`
+    <h2 style="color:#fff; font-size:20px; margin:0 0 12px;">Confirm your email</h2>
+    <p style="color:rgba(255,255,255,0.6); font-size:14px; line-height:1.7;">Hi ${userName}, please confirm this is really your email address. This link expires in 24 hours.</p>
+    ${btn('Verify Email →', verifyUrl)}
+    <p style="color:rgba(255,255,255,0.35); font-size:12px; line-height:1.6; margin-top:18px;">If you didn't create a NexWork account, you can ignore this email.</p>
+  `),
+
+  reportReceived: ({ reporterName, targetType, reason, frontendUrl }) => wrap(`
+    <h2 style="color:#fff; font-size:20px; margin:0 0 12px;">🚩 New Report Submitted</h2>
+    <p style="color:rgba(255,255,255,0.6); font-size:14px; line-height:1.7;"><strong style="color:${gold}">${reporterName}</strong> reported a ${targetType}.<br/>Reason: <strong>${reason}</strong></p>
+    ${btn('Review in Admin →', `${frontendUrl||'https://nexwork.vercel.app'}/admin`)}
+  `),
 };

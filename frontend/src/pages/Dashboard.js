@@ -68,6 +68,8 @@ export default function Dashboard() {
     <div style={{ background: 'var(--bg)', minHeight: '100vh', color: 'var(--text)' }}>
       <TopNav />
 
+      {user.emailVerified === false && <EmailVerifyBanner />}
+
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 24 }}>
 
@@ -194,6 +196,32 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EmailVerifyBanner() {
+  const { token } = useAuth();
+  const [status, setStatus] = useState(''); // '', 'sending', 'sent', 'error'
+
+  const resend = async () => {
+    setStatus('sending');
+    try {
+      await axios.post(`${API}/api/auth/resend-verification`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setStatus('sent');
+    } catch (e) { setStatus('error'); }
+  };
+
+  return (
+    <div style={{ background: 'var(--warning-bg)', borderBottom: '1px solid var(--border)', padding: '10px 24px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 13, color: 'var(--warning)' }}>
+        {status === 'sent' ? 'Verification email sent — check your inbox.' : 'Please verify your email to unlock all features.'}
+      </span>
+      {status !== 'sent' && (
+        <button onClick={resend} disabled={status === 'sending'} className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 12 }}>
+          {status === 'sending' ? 'Sending…' : status === 'error' ? 'Failed — try again' : 'Resend email'}
+        </button>
+      )}
     </div>
   );
 }

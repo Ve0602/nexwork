@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import TopNav from '../components/TopNav';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-const TABS = ['Dashboard','Users','Orders','Services','Settings'];
+const TABS = ['Dashboard','Users','Reports','Orders','Services','Settings'];
 
 export default function AdminDashboard() {
   const { token, user } = useAuth();
@@ -32,6 +32,7 @@ export default function AdminDashboard() {
       <div style={{ maxWidth: 1100, margin:'0 auto', padding:'28px 24px' }}>
         {tab==='Dashboard' && <DashboardTab h={h} />}
         {tab==='Users'     && <UsersTab h={h} />}
+        {tab==='Reports'   && <ReportsTab h={h} />}
         {tab==='Orders'    && <OrdersTab h={h} />}
         {tab==='Services'  && <ServicesTab h={h} />}
         {tab==='Settings'  && <SettingsTab />}
@@ -145,6 +146,103 @@ function UsersTab({ h }) {
               <button onClick={()=>del(u._id)} className="btn btn-ghost" style={{ color:'var(--danger)' }}>Delete</button>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReportsTab({ h }) {
+  const [reports, setReports] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [statusFilter, setStatusFilter] = useState('pending');
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => { load(); }, [statusFilter]);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const q = new URLSearchParams(statusFilter ? { status: statusFilter } : {});
+      const { data } = await axios.get(`${API}/api/reports?${q}`, { headers: h });
+      setReports(data.reports || []); setTotal(data.total || 0); setPendingCount(data.pendingCount || 0);
+    } catch (e) { console.log(e.message); }
+    finally { setLoading(false); }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      await axios.put(`${API}/api/reports/${id}`, { status, adminNotes: notes }, { headers: h });
+      setSelected(null); setNotes(''); load();
+    } catch (e) { console.log(e.message); }
+  };
+
+  const STATUS_CLASS = { pending: 'tag-warning', reviewing: 'tag-accent', resolved: 'tag-success', dismissed: 'tag' };
+  const REASON_LABELS = { spam:'Spam', scam_or_fraud:'Scam or fraud', inappropriate_content:'Inappropriate content', harassment:'Harassment', fake_profile:'Fake profile', not_as_described:'Not as described', other:'Other' };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600 }}>Reports {pendingCount > 0 && <span className="tag tag-warning" style={{ marginLeft: 8 }}>{pendingCount} pending</span>}</h2>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {['pending','reviewing','resolved','dismissed',''].map(s => (
+            <button key={s||'all'} onClick={() => setStatusFilter(s)} className="tag" style={{ cursor:'pointer', textTransform: 'capitalize', background: statusFilter===s ? 'var(--accent-subtle)' : 'var(--bg)', color: statusFilter===s ? 'var(--accent)' : 'var(--text-muted)', border: `1px solid ${statusFilter===s ? 'transparent' : 'var(--border)'}` }}>{s || 'All'}</button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? <div style={{ textAlign:'center', padding:40, color:'var(--text-muted)', fontSize:13 }}>Loading…</div>
+      : reports.length === 0 ? <div style={{ textAlign:'center', padding:60, color:'var(--text-faint)', fontSize:13 }}>No reports{statusFilter && ` with status "${statusFilter}"`}.</div>
+      : (
+        <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 340px' : '1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {reports.map(r => (
+              <div key={r._id} onClick={() => { setSelected(r); setNotes(r.adminNotes || ''); }} className="card" style={{ padding: '12px 16px', cursor: 'pointer', borderColor: selected?._id === r._id ? 'var(--accent)' : 'var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                  <div>
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'center' }}>
+                      <span className={`tag ${STATUS_CLASS[r.status]}`} style={{ textTransform: 'capitalize' }}>{r.status}</span>
+                      <span className="tag" style={{ textTransform: 'capitalize' }}>{r.targetType}</span>
+                    </div>
+                    <div style={{ fontWeight: 600, fontSize: 13 }}>{REASON_LABELS[r.reason] || r.reason}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>by {r.reporterId?.name || 'unknown'} · {new Date(r.createdAt).toLocaleDateString()}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {selected && (
+            <div className="card" style={{ padding: 18, alignSelf: 'start', position: 'sticky', top: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 600 }}>Report detail</h3>
+                <button onClick={() => setSelected(null)} className="btn btn-ghost">✕</button>
+              </div>
+              {[['Type', selected.targetType],['Target ID', selected.targetId],['Reason', REASON_LABELS[selected.reason] || selected.reason],['Reported by', `${selected.reporterId?.name || '—'} (${selected.reporterId?.email || '—'})`]].map(([k,v]) => (
+                <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '7px 0', borderBottom: '1px solid var(--border)', fontSize: 12 }}>
+                  <span style={{ color: 'var(--text-faint)' }}>{k}</span><span style={{ fontWeight: 500, wordBreak: 'break-all' }}>{v}</span>
+                </div>
+              ))}
+              {selected.details && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>Details</div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>{selected.details}</p>
+                </div>
+              )}
+
+              <div style={{ marginTop: 14 }}>
+                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Admin notes</label>
+                <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="input" style={{ resize: 'vertical', marginBottom: 12 }} />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button onClick={() => updateStatus(selected._id, 'reviewing')} className="btn btn-secondary">Mark reviewing</button>
+                  <button onClick={() => updateStatus(selected._id, 'resolved')} className="btn btn-primary">Resolve</button>
+                  <button onClick={() => updateStatus(selected._id, 'dismissed')} className="btn btn-ghost">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

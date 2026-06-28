@@ -25,6 +25,9 @@ import Earnings        from './pages/Earnings';
 import Notifications   from './pages/Notifications';
 import ProjectDetail   from './pages/ProjectDetail';
 import TalentProfile   from './pages/TalentProfile';
+import VerifyEmail     from './pages/VerifyEmail';
+import Terms           from './pages/Terms';
+import Privacy         from './pages/Privacy';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -139,6 +142,9 @@ export default function App() {
           <Route path="/notifications"  element={<Protected><Notifications /></Protected>} />
           <Route path="/projects/:id"   element={<ProjectDetail />} />
           <Route path="/talent/:id"     element={<TalentProfile />} />
+          <Route path="/verify-email"   element={<VerifyEmail />} />
+          <Route path="/terms"          element={<Terms />} />
+          <Route path="/privacy"        element={<Privacy />} />
           <Route path="/candidates"     element={<Protected><ComingSoon title="Candidates 👥" icon="👥" /></Protected>} />
 
           {/* Admin */}

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopNav from '../components/TopNav';
+import ReportButton from '../components/ReportButton';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const STATUS_CLASS = { open:'tag-success', in_progress:'tag-accent', completed:'tag-success', cancelled:'tag-danger', disputed:'tag-danger' };
@@ -151,6 +152,11 @@ export default function ProjectDetail() {
                   </div>
                 </div>
                 {token && !isOwner && <Link to={`/messages?to=${project.clientId._id}`} className="btn btn-secondary" style={{ width:'100%', marginTop:12, textAlign:'center' }}>Message</Link>}
+                {token && (
+                  <div style={{ textAlign: 'center', marginTop: 10 }}>
+                    <ReportButton targetType="project" targetId={project._id} />
+                  </div>
+                )}
               </div>
             )}
           </div>

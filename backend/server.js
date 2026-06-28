@@ -22,6 +22,7 @@ app.use('/api/admin',    require('./routes/admin'));
 app.use('/api/ai',       require('./routes/ai'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/notifications', require('./routes/notifications').router);
+app.use('/api/reports', require('./routes/reports'));
 
 app.get('/', (req, res) => res.json({ status: 'NexWork API running ✅' }));
 

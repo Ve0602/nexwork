@@ -175,9 +175,8 @@ export default function LandingPage() {
         <span className="mono" style={{ fontSize: 13, color: 'var(--text-muted)' }}>NexWork</span>
         <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>© 2026 · Warangal, India</span>
         <div style={{ display: 'flex', gap: 16 }}>
-          {['Privacy', 'Terms', 'Contact'].map(l => (
-            <a key={l} href="#" style={{ fontSize: 12, color: 'var(--text-faint)' }}>{l}</a>
-          ))}
+          <Link to="/privacy" style={{ fontSize: 12, color: 'var(--text-faint)' }}>Privacy</Link>
+          <Link to="/terms" style={{ fontSize: 12, color: 'var(--text-faint)' }}>Terms</Link>
         </div>
       </footer>
     </div>
